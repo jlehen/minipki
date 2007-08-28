@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [ $# -eq 0 ]; then
-	echo "Usage: $0 <mail>"
+if [ $# -lt 1 ]; then
+	echo "Usage: $0 <mail> [name]"
 	exit
 fi
 
@@ -15,6 +15,9 @@ done
 export CLIENTNAME=
 export SERVERNAME=
 export USERMAIL=$1
+export USERNAME="$2"
+
+[ -z "$USERNAME" ] && USERNAME="$USERMAIL"
 
 set -e
 
@@ -31,7 +34,7 @@ openssl req -new \
     -out users/$USERMAIL/$USERMAIL.req
 
 for type in auth sign crypt; do
-	echo "*** Generating $type certificat for $USERMAIL..."
+	echo "*** Generating $type certificate for $USERMAIL..."
 	openssl x509 -req \
 	    -in users/$USERMAIL/$USERMAIL.req \
 	    -extfile rootca.config -extensions user_${type}_exts \
@@ -46,4 +49,12 @@ for type in auth sign crypt; do
 	    -in users/$USERMAIL/$USERMAIL.$type.crt \
 	    -noout \
 	    -text > users/$USERMAIL/$USERMAIL.$type.txt
+
+	echo "*** Creating PKCS12 file..."
+	openssl pkcs12 \
+	    -export -passout pass: \
+	    -CAfile rootca/rootca.crt \
+	    -in users/$USERMAIL/$USERMAIL.$type.crt \
+	    -inkey users/$USERMAIL/private/$USERMAIL.key \
+	    -out users/$USERMAIL/$USERMAIL.$type.p12
 done
