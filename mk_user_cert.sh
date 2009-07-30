@@ -6,7 +6,7 @@ if [ $# -lt 1 ]; then
 fi
 
 for var in ROOTCAPASSWD ROOTCAMAIL; do
-	if eval [ -z "$$$var" ]; then
+	if eval [ -z "'\$$var'" ]; then
 		echo "Please set \$$var in the environment." >&2
 		exit 1
 	fi
