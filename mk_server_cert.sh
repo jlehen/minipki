@@ -1,47 +1,49 @@
 #!/bin/sh
 
-if [ $# -eq 0 ]; then
-	echo "Usage: $0 <servername>"
+if [ $# -ne 2 ]; then
+	echo "Usage: $0 <servername> <duration>" >&2
 	exit
 fi
 
-for var in ROOTCAPASSWD ROOTCAMAIL; do
-	if eval [ -z "'\$$var'" ]; then
+for var in CHILDCAPASSWD; do
+	if eval [ -z "\"\$$var\"" ]; then
 		echo "Please set \$$var in the environment." >&2
 		exit 1
 	fi
 done
 
-export CLIENTNAME=
-export SERVERNAME=$1
-export USERMAIL=
+NAME=$1
+DURATION=$2
 
 set -e
 
 [ -d servers ] || mkdir servers
-mkdir servers/$SERVERNAME
-mkdir servers/$SERVERNAME/private
-chmod 700 servers/$SERVERNAME/private
+mkdir servers/$NAME
+mkdir servers/$NAME/private
+chmod 700 servers/$NAME/private
 
-echo "*** Generating key and certificate request for $SERVERNAME..."
-openssl req -new \
-    -config server.config \
-    -nodes \
-    -keyout servers/$SERVERNAME/private/$SERVERNAME.key \
-    -out servers/$SERVERNAME/$SERVERNAME.req
+OU=server
+export OU NAME
 
-echo "*** Generating certificat for $SERVERNAME..."
-openssl x509 -req \
-    -in servers/$SERVERNAME/$SERVERNAME.req \
-    -extfile rootca.config -extensions server_exts \
-    -CAkey rootca/private/rootca.key -passin env:ROOTCAPASSWD \
-    -sha1 \
-    -days 365 \
-    -CA rootca/rootca.crt \
-    -out servers/$SERVERNAME/$SERVERNAME.crt
+echo "*** Generating key and certificate request for $NAME..."
+openssl req -new -batch -nodes \
+    -config etc/req.conf \
+    -keyout servers/$NAME/private/$NAME.key \
+    -out servers/$NAME/$NAME.csr
 
-echo "*** Dumping $SERVERNAME certificate as text..."
+echo "*** Generating certificate for $NAME..."
+openssl ca -batch \
+    -in servers/$NAME/$NAME.csr \
+    -extfile etc/server_exts.conf -extensions server_exts \
+    -keyfile childca.$OU/private/childca.key -passin env:CHILDCAPASSWD \
+    -cert childca.$OU/childca.crt \
+    -config etc/childca.conf \
+    -days $DURATION \
+    -md sha1 \
+    -out servers/$NAME/$NAME.crt
+
+echo "*** Dumping $NAME certificate as text..."
 openssl x509 \
-    -in servers/$SERVERNAME/$SERVERNAME.crt \
+    -in servers/$NAME/$NAME.crt \
     -noout \
-    -text > servers/$SERVERNAME/$SERVERNAME.txt
+    -text > servers/$NAME/$NAME.txt

@@ -1,26 +1,25 @@
 #!/bin/sh
 
-for var in ROOTCAPASSWD ROOTCAMAIL; do
-	eval if [ -z "'\$$var'" ]; then
+for var in ROOTCAPASSWD ROOTCAYEARS; do
+	if eval [ -z "\"\$$var\"" ]; then
 		echo "Please set \$$var in the environment." >&2
 		exit 1
 	fi
 done
 
-export CLIENTNAME=
-export SERVERNAME=
-export USERMAIL=
-
 set -e
 
-mkdir rootca
-mkdir rootca/private
+[ -e rootca ] || mkdir rootca
+[ -e rootca/private ] || mkdir rootca/private
 chmod 700 rootca/private
+[ -e rootca/certs ] || mkdir rootca/certs
+touch rootca/database.txt
+echo 01 > rootca/serial.txt
 
 echo "*** Generating key and self-signed certificate for rootca..."
-openssl req -new -x509 \
-    -days 3650 \
-    -config rootca.config \
+openssl req -new -x509 -verbose \
+    -days $(($ROOTCAYEARS * 365)) \
+    -config etc/rootca_req.conf \
     -keyout rootca/private/rootca.key -passout env:ROOTCAPASSWD \
     -out rootca/rootca.crt
 

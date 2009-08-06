@@ -1,60 +1,64 @@
 #!/bin/sh
 
-if [ $# -lt 1 ]; then
-	echo "Usage: $0 <mail> [name]"
-	exit
-fi
+usage() {
+	echo "Usage: $0 <name> <mail> <duration>" >&2
+	exit 1
 
-for var in ROOTCAPASSWD ROOTCAMAIL; do
-	if eval [ -z "'\$$var'" ]; then
+}
+
+[ $# -eq 3 ] || usage
+
+NAME=$1
+MAIL=$2
+DURATION=$3
+
+for var in CHILDCAPASSWD; do
+	if eval [ -z "\"\$$var\"" ]; then
 		echo "Please set \$$var in the environment." >&2
 		exit 1
 	fi
 done
 
-export CLIENTNAME=
-export SERVERNAME=
-export USERMAIL=$1
-export USERNAME="$2"
-
-[ -z "$USERNAME" ] && USERNAME="$USERMAIL"
-
 set -e
 
 [ -d users ] || mkdir users
-mkdir users/$USERMAIL
-mkdir users/$USERMAIL/private
-chmod 700 users/$USERMAIL/private
+mkdir users/$MAIL
+mkdir users/$MAIL/private
+chmod 700 users/$MAIL/private
 
-echo "*** Generating key and certificate request for $USERMAIL..."
+OU=user
+export OU MAIL TYPE NAME
+
+echo "*** Generating key and certificate request for $NAME ($MAIL)..."
 openssl req -new \
-    -config user.config \
+    -config etc/req.conf \
     -nodes \
-    -keyout users/$USERMAIL/private/$USERMAIL.key \
-    -out users/$USERMAIL/$USERMAIL.req
+    -keyout users/$MAIL/private/$MAIL.key \
+    -out users/$MAIL/$MAIL.csr
 
-for type in auth sign crypt; do
-	echo "*** Generating $type certificate for $USERMAIL..."
-	openssl x509 -req \
-	    -in users/$USERMAIL/$USERMAIL.req \
-	    -extfile rootca.config -extensions user_${type}_exts \
-	    -CAkey rootca/private/rootca.key -passin env:ROOTCAPASSWD \
-	    -sha1 \
-	    -days 365 \
-	    -CA rootca/rootca.crt \
-	    -out users/$USERMAIL/$USERMAIL.$type.crt
+for type in auth mail; do
+	echo "*** Generating $type certificate for $NAME ($MAIL)..."
+	openssl ca -batch \
+	    -in users/$MAIL/$MAIL.csr \
+	    -extfile etc/user_exts.conf -extensions user_${type}_exts \
+	    -keyfile childca.$OU/private/childca.key -passin env:CHILDCAPASSWD \
+	    -cert childca.$OU/childca.crt \
+	    -config etc/childca.conf \
+	    -days $DURATION \
+	    -md sha1 \
+	    -out users/$MAIL/$MAIL.$type.crt
 
-	echo "*** Dumping $USERMAIL certificate as text..."
+	echo "*** Dumping $NAME ($MAIL) certificate as text..."
 	openssl x509 \
-	    -in users/$USERMAIL/$USERMAIL.$type.crt \
+	    -in users/$MAIL/$MAIL.$type.crt \
 	    -noout \
-	    -text > users/$USERMAIL/$USERMAIL.$type.txt
+	    -text > users/$MAIL/$MAIL.$type.txt
 
 	echo "*** Creating PKCS12 file..."
 	openssl pkcs12 \
 	    -export -passout pass: \
 	    -CAfile rootca/rootca.crt \
-	    -in users/$USERMAIL/$USERMAIL.$type.crt \
-	    -inkey users/$USERMAIL/private/$USERMAIL.key \
-	    -out users/$USERMAIL/$USERMAIL.$type.p12
+	    -in users/$MAIL/$MAIL.$type.crt \
+	    -inkey users/$MAIL/private/$MAIL.key \
+	    -out users/$MAIL/$MAIL.$type.p12
 done
