@@ -10,12 +10,14 @@ usage() {
 
 case "$1" in
 server|client|user)
-	OU=$1 
 	;;
 *)
 	usage
 	;;
 esac
+
+OU=$1
+DURATION=$2
 
 for var in ROOTCAPASSWD CHILDCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
