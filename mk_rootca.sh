@@ -1,6 +1,13 @@
 #!/bin/sh
 
-for var in ROOTCAPASSWD ROOTCAYEARS; do
+usage() {
+	echo "Usage: $0 <duration>" >&2
+	exit 1
+}
+
+DURATION=$1
+
+for var in ROOTCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
 		echo "Please set \$$var in the environment." >&2
 		exit 1
@@ -18,7 +25,7 @@ echo 01 > rootca/serial.txt
 
 echo "*** Generating key and self-signed certificate for rootca..."
 openssl req -new -x509 -verbose \
-    -days $(($ROOTCAYEARS * 365)) \
+    -days $DURATION \
     -config etc/rootca_req.conf \
     -keyout rootca/private/rootca.key -passout env:ROOTCAPASSWD \
     -out rootca/rootca.crt
