@@ -9,13 +9,13 @@ usage() {
 }
 
 readpw() {
-	local pw
 
-	stty -echo
+	echo "Warning: Double every backslash."
 	echo -n "$1? "
-	read pw
+	stty -echo
+	eval read $1
 	stty echo
-	echo "$pw"
+	echo
 }
 
 [ $# -eq 2 ] || usage
@@ -33,8 +33,8 @@ echo "$2" | grep -q '^[0-9][0-9]*$' || usage "ERROR: Invalid duration '$2'"
 OU=$1
 DURATION=$2
 
-[ -z "$ROOTCAPASSWD" ] && ROOTCAPASSWD=$(readpw ROOTCAPASSWD)
-[ -z "$CHILDCAPASSWD" ] && CHILDCAPASSWD=$(readpw CHILDCAPASSWD)
+[ -z "$ROOTCAPASSWD" ] && readpw ROOTCAPASSWD
+[ -z "$CHILDCAPASSWD" ] && readpw CHILDCAPASSWD
 
 for var in ROOTCAPASSWD CHILDCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
@@ -58,16 +58,16 @@ NAME=CA
 export OU NAME
 
 echo "*** Generating key and certificate request for childca..."
-openssl req -new \
+echo "$CHILDCAPASSWD" | openssl req -new \
     -config etc/req.conf \
-    -keyout $D/private/childca.key -passout env:CHILDCAPASSWD \
+    -keyout $D/private/childca.key -passout stdin \
     -out $D/childca.csr
 
 echo "*** Generating certificate for childca..."
-openssl ca -batch \
+echo "$ROOTCAPASSWD" | openssl ca -batch \
     -in $D/childca.csr \
     -extfile etc/childca_exts.conf -extensions childca_exts \
-    -keyfile rootca/private/rootca.key -passin env:ROOTCAPASSWD \
+    -keyfile rootca/private/rootca.key -passin stdin \
     -cert rootca/rootca.crt \
     -config etc/rootca.conf \
     -days $DURATION \

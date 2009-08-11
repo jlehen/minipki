@@ -8,13 +8,13 @@ usage() {
 }
 
 readpw() {
-	local pw
 
-	stty -echo
+	echo "Warning: Double every backslash."
 	echo -n "$1? "
-	read pw
+	stty -echo
+	eval read $1
 	stty echo
-	echo "$pw"
+	echo
 }
 
 [ $# -eq 3 ] || usage
@@ -24,7 +24,7 @@ NAME=$1
 MAIL=$2
 DURATION=$3
 
-[ -z "$CHILDCAPASSWD" ] && CHILDCAPASSWD=$(readpw CHILDCAPASSWD)
+[ -z "$CHILDCAPASSWD" ] && readpw CHILDCAPASSWD
 
 for var in CHILDCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
@@ -52,10 +52,10 @@ openssl req -new \
 
 for type in auth mail; do
 	echo "*** Generating $type certificate for $NAME ($MAIL)..."
-	openssl ca -batch \
+	echo "$CHILDCAPASSWD" | openssl ca -batch \
 	    -in users/$MAIL/$MAIL.csr \
 	    -extfile etc/user_exts.conf -extensions user_${type}_exts \
-	    -keyfile childca.$OU/private/childca.key -passin env:CHILDCAPASSWD \
+	    -keyfile childca.$OU/private/childca.key -passin stdin \
 	    -cert childca.$OU/childca.crt \
 	    -config etc/childca.conf \
 	    -days $DURATION \

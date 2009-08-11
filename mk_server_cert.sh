@@ -8,13 +8,13 @@ usage() {
 }
 
 readpw() {
-	local pw
 
-	stty -echo
+	echo "Warning: Double every backslash."
 	echo -n "$1? "
-	read pw
+	stty -echo
+	eval read $1
 	stty echo
-	echo "$pw"
+	echo
 }
 
 [ $# -eq 2 ] || usage
@@ -23,7 +23,7 @@ echo "$2" | grep -q '^[0-9][0-9]*$' || usage usage "ERROR: Invalid duration '$2'
 NAME=$1
 DURATION=$2
 
-[ -z "$CHILDCAPASSWD" ] && CHILDCAPASSWD=$(readpw CHILDCAPASSWD)
+[ -z "$CHILDCAPASSWD" ] && readpw CHILDCAPASSWD
 
 for var in CHILDCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
@@ -49,10 +49,10 @@ openssl req -new -batch -nodes \
     -out servers/$NAME/$NAME.csr
 
 echo "*** Generating certificate for $NAME..."
-openssl ca -batch \
+echo "$CHILDCAPASSWD" | openssl ca -batch \
     -in servers/$NAME/$NAME.csr \
     -extfile etc/server_exts.conf -extensions server_exts \
-    -keyfile childca.$OU/private/childca.key -passin env:CHILDCAPASSWD \
+    -keyfile childca.$OU/private/childca.key -passin stdin \
     -cert childca.$OU/childca.crt \
     -config etc/childca.conf \
     -days $DURATION \
