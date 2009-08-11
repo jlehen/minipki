@@ -5,6 +5,7 @@ usage() {
 	exit 1
 }
 
+[ $# -eq 1 ] || usage
 DURATION=$1
 
 for var in ROOTCAPASSWD; do
