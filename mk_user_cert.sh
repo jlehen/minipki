@@ -7,6 +7,16 @@ usage() {
 	exit 1
 }
 
+readpw() {
+	local pw
+
+	stty -echo
+	echo -n "$1? "
+	read pw
+	stty echo
+	echo "$pw"
+}
+
 [ $# -eq 3 ] || usage
 echo "$3" | grep -q '^[0-9][0-9]*$' || usage usage "ERROR: Invalid duration '$3'"
 
@@ -14,9 +24,11 @@ NAME=$1
 MAIL=$2
 DURATION=$3
 
+[ -z "$CHILDCAPASSWD" ] && CHILDCAPASSWD=$(readpw CHILDCAPASSWD)
+
 for var in CHILDCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
-		echo "Please set \$$var in the environment." >&2
+		echo "ERROR: Empty \$$var." >&2
 		exit 1
 	fi
 done
