@@ -1,11 +1,14 @@
 #!/bin/sh
 
 usage() {
+	[ $# -gt 0 ] && echo "$@" >&2
 	echo "Usage: $0 <duration>" >&2
+	echo "Duration: in days" >&2
 	exit 1
 }
 
 [ $# -eq 1 ] || usage
+echo "$1" | grep -q '^[0-9][0-9]*$' || usage usage "ERROR: Invalid duration '$1'"
 DURATION=$1
 
 for var in ROOTCAPASSWD; do

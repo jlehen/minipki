@@ -1,8 +1,10 @@
 #!/bin/sh
 
 usage() {
+	[ $# -gt 0 ] && echo "$@" >&2
 	echo "Usage: $0 <type> <duration>" >&2
 	echo "Types: server, client, user" >&2
+	echo "Duration: in days" >&2 
 	exit 1
 }
 
@@ -12,9 +14,11 @@ case "$1" in
 server|client|user)
 	;;
 *)
-	usage
+	usage "ERROR: Unknown type '$1'"
 	;;
 esac
+
+echo "$2" | grep -q '^[0-9][0-9]*$' || usage "ERROR: Invalid duration '$2'"
 
 OU=$1
 DURATION=$2

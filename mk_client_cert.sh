@@ -1,9 +1,17 @@
 #!/bin/sh
 
-if [ $# -eq 0 ]; then
+usage() {
+	[ $# -gt 0 ] && echo "$@" >&2
 	echo "Usage: $0 <clientname> <duration>" >&2
-	exit
-fi
+	echo "Duration: in days" >&2
+	exit 1
+}
+
+[ $# -eq 2 ] || usage
+echo "$2" | grep -q '^[0-9][0-9]*$' || usage usage "ERROR: Invalid duration '$2'"
+
+NAME=$1
+DURATION=$2
 
 for var in CHILDCAPASSWD; do
 	if eval [ -z "\"\$$var\"" ]; then
@@ -11,9 +19,6 @@ for var in CHILDCAPASSWD; do
 		exit 1
 	fi
 done
-
-NAME=$1
-DURATION=$2
 
 set -e
 

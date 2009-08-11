@@ -1,12 +1,14 @@
 #!/bin/sh
 
 usage() {
+	[ $# -gt 0 ] && echo "$@" >&2
 	echo "Usage: $0 <name> <mail> <duration>" >&2
+	echo "Duration: in days" >&2
 	exit 1
-
 }
 
 [ $# -eq 3 ] || usage
+echo "$3" | grep -q '^[0-9][0-9]*$' || usage usage "ERROR: Invalid duration '$3'"
 
 NAME=$1
 MAIL=$2
