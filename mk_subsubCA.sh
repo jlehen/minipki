@@ -91,6 +91,7 @@ echo "$SUBSUBCAPASSWD" | openssl req -new \
     -out "$D/csr.pem"
 
 echo "*** Generating certificate for subsubCA..."
+genRandomSerial "$CADIR"
 echo "$SUBCAPASSWD" | openssl ca -batch \
     -in "$D/csr.pem" \
     -extfile etc/exts.conf -extensions subsubCA_exts \

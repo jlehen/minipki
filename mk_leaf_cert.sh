@@ -82,6 +82,7 @@ openssl req -new -batch -nodes \
     -out "$D/csr.pem"
 
 echo "*** Generating certificate for $NAME..."
+genRandomSerial "$CADIR"
 echo "$SUBSUBCAPASSWD" | openssl ca -batch \
     -in "$D/csr.pem" \
     -extfile etc/exts.conf -extensions $EXTTYPE \
