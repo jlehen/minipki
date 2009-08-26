@@ -52,8 +52,6 @@ ALTNAME="$2"
 
 [ -z "$SUBSUBCAPASSWD" ] && readpw SUBSUBCAPASSWD
 
-failIfEmpty SUBSUBCAPASSWD
-
 #
 # Let the show begin.
 . "$CADIR/config.sh"

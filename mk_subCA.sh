@@ -48,8 +48,6 @@ OU="$1"
 [ -z "$ROOTCAPASSWD" ] && readpw ROOTCAPASSWD
 [ -z "$SUBCAPASSWD" ] && readpw SUBCAPASSWD
 
-failIfEmpty ROOTCAPASSWD SUBCAPASSWD
-
 #
 # Let the show begin.
 . "$CADIR/config.sh"

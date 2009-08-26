@@ -65,8 +65,6 @@ esac
 [ -z "$SUBCAPASSWD" ] && readpw SUBCAPASSWD
 [ -z "$SUBSUBCAPASSWD" ] && readpw SUBSUBCAPASSWD
 
-failIfEmpty SUBCAPASSWD SUBSUBCAPASSWD
-
 #
 # Let the show begin.
 . "$CADIR/config.sh"

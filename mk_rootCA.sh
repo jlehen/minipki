@@ -31,8 +31,6 @@ echo "$LIFESPAN" | grep -q '^[0-9][0-9]*$' || \
 
 [ -z "$ROOTCAPASSWD" ] && readpw ROOTCAPASSWD
 
-failIfEmpty ROOTCAPASSWD
-
 #
 # Let the show begin.
 D=$(builddir "C=$C" "O=$O")

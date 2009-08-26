@@ -10,6 +10,10 @@ readpw() {
 	stty -echo
 	eval read $1
 	stty echo
+	if [ -z "$1" ]; then
+		echo "ERROR: Empty $1." >&2
+		exit 1
+	fi
 	echo
 }
 
@@ -21,18 +25,6 @@ mkCAhierarchy() {
 	chmod 600 "$d/key.pem"
 	touch "$d/database.txt"
 	echo 01 > "$d/serial.txt"
-}
-
-failIfEmpty() {
-	local pw
-
-	for var in "$@"; do
-		eval pw="\"\$$var\""
-		if eval [ -z "$pw" ]; then
-			echo "ERROR: Empty \$$var." >&2
-			exit 1
-		fi
-	done
 }
 
 dumpcert() {
