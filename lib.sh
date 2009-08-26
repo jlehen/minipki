@@ -24,9 +24,11 @@ mkCAhierarchy() {
 }
 
 failIfEmpty() {
+	local pw
 
 	for var in "$@"; do
-		if eval [ -z "\"\$$var\"" ]; then
+		eval pw="\"\$$var\""
+		if eval [ -z "$pw" ]; then
 			echo "ERROR: Empty \$$var." >&2
 			exit 1
 		fi
