@@ -83,10 +83,11 @@ deepOrFlat() {
 
 genRandomSerial() {
 	local d s
+	local N=4
 
 	d="$1"
 	while : ; do
-		s=$(openssl rand 8 | od -t x8 | awk 'NR == 1 {print $2}' | tr 'a-z' 'A-Z')
+		s=$(openssl rand $N | od -t x$N | awk 'NR == 1 {print $2}' | tr 'a-z' 'A-Z')
 		cat "$d/database.txt" | awk "\$3 ~ /^$s$/ { exit 1 }" && break
 	done
 	echo "$s" > "$d/serial.txt"
