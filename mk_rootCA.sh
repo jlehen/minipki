@@ -29,7 +29,10 @@ O="$3"
 echo "$LIFESPAN" | grep -q '^[0-9][0-9]*$' || \
     usage "ERROR: Invalid lifespan '$LIFESPAN'"
 
-[ -z "$ROOTCAPASSWD" ] && readpw ROOTCAPASSWD
+if [ -z "$ROOTCAPASSWD" ]; then
+	readpw -v ROOTCAPASSWD
+	ROOTCAPASSWD="$PW"
+fi
 
 #
 # Let the show begin.

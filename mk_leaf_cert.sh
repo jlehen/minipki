@@ -50,7 +50,10 @@ echo "$LIFESPAN" | grep -q '^[0-9][0-9]*$' || \
 NAME="$1"
 ALTNAME="$2"
 
-[ -z "$SUBSUBCAPASSWD" ] && readpw SUBSUBCAPASSWD
+if [ -z "$SUBSUBCAPASSWD" ]; then
+	readpw SUBSUBCAPASSWD
+	SUBSUBCAPASSWD="$PW"
+fi
 
 #
 # Let the show begin.

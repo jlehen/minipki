@@ -3,18 +3,41 @@ error() {
 	exit 1
 }
 
+# Result in $PW global variable.
 readpw() {
+	local verify pw1 pw2
 
-	echo "Warning: Double every backslash."
-	echo -n "$1? "
-	stty -echo
-	eval read $1
-	stty echo
-	if [ -z "$1" ]; then
-		echo "ERROR: Empty $1." >&2
-		exit 1
+	if [ "x$1" = "x-v" ]; then
+		verify=1
+		shift
 	fi
-	echo
+
+	while : ; do
+		echo "Warning: Double every backslash."
+		echo -n "$1? "
+		stty -echo
+		read pw1
+		stty echo
+		echo
+
+		if [ -z "$pw1" ]; then
+			echo "ERROR: Empty $1." >&2
+			continue
+		fi
+
+		[ -z "$verify" ] && break
+
+		echo -n "$1 again? "
+		stty -echo
+		read pw2
+		stty echo
+		echo
+
+		[ "x$pw1" = "x$pw2" ] && break
+
+		echo "ERROR: Passwords mismatch." >&2
+	done
+	PW="$pw1"
 }
 
 mkCAhierarchy() {

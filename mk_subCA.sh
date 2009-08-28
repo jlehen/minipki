@@ -45,8 +45,14 @@ echo "$LIFESPAN" | grep -q '^[0-9][0-9]*$' || \
 
 OU="$1"
 
-[ -z "$ROOTCAPASSWD" ] && readpw ROOTCAPASSWD
-[ -z "$SUBCAPASSWD" ] && readpw SUBCAPASSWD
+if [ -z "$ROOTCAPASSWD" ]; then
+	readpw ROOTCAPASSWD
+	ROOTCAPASSWD="$PW"
+fi
+if [ -z "$SUBCAPASSWD" ]; then
+	readpw -v SUBCAPASSWD
+	SUBCAPASSWD="$PW"
+fi
 
 #
 # Let the show begin.

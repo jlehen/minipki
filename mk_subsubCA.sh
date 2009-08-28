@@ -62,8 +62,14 @@ case "$1" in
 	;;
 esac
 
-[ -z "$SUBCAPASSWD" ] && readpw SUBCAPASSWD
-[ -z "$SUBSUBCAPASSWD" ] && readpw SUBSUBCAPASSWD
+if [ -z "$SUBCAPASSWD" ]; then
+	readpw SUBCAPASSWD
+	SUBCAPASSWD="$PW"
+fi
+if [ -z "$SUBSUBCAPASSWD" ]; then
+	readpw -v SUBSUBCAPASSWD
+	SUBSUBCAPASSWD="$PW"
+fi
 
 #
 # Let the show begin.
