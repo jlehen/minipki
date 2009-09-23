@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: mk_subCA.sh,v 1.5 2009/09/23 21:23:57 jlh Exp $
+# $Id: mk_subCA.sh,v 1.6 2009/09/23 21:33:26 jlh Exp $
 
 usage() {
 	local me=`basename $0`
@@ -87,7 +87,7 @@ echo "$ROOTCAPASSWD" | openssl ca -batch \
     -keyfile "$CADIR/key.pem" -passin stdin \
     -cert "$CADIR/crt.pem" \
     -config etc/ca.conf \
-    -days $LIFESPAN \
+    -days $LIFESPAN \
     -md sha1 \
     -out "$D/crt.pem"
 
