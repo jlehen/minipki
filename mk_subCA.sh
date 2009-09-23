@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: mk_subCA.sh,v 1.5 2009/09/23 21:23:57 jlh Exp $
 
 usage() {
 	local me=`basename $0`

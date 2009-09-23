@@ -1,3 +1,5 @@
+# $Id: lib.sh,v 1.7 2009/09/23 21:23:57 jlh Exp $
+
 error() {
 	echo "$@" >&2
 	exit 1
