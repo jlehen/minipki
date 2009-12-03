@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: mk_subCA.sh,v 1.7 2009/12/03 23:39:46 jlh Exp $
+# $Id: mk_subCA.sh,v 1.8 2009/12/03 23:51:29 jlh Exp $
 
 usage() {
 	local me=`basename $0`
@@ -89,7 +89,10 @@ echo "$ROOTCAPASSWD" | openssl ca -batch \
     -config etc/ca.conf \
     -days $LIFESPAN \
     -md sha1 \
-    -out "$D/crt.pem"
+    -out "$D/crt.txtpem"
+# We want only the PEM part.
+openssl x509 -inform PEM -in "$D/crt.txtpem" > "$D/crt.pem"
+rm "$D/crt.txtpem"
 
 echo "*** Creating certificate chain..."
 cat "$CADIR/crt.pem" "$D/crt.pem" > "$D/crtchain.pem"
