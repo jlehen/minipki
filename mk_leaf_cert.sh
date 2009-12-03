@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: mk_leaf_cert.sh,v 1.5 2009/09/23 21:23:57 jlh Exp $
+# $Id: mk_leaf_cert.sh,v 1.6 2009/12/03 23:39:46 jlh Exp $
 
 usage() {
 	local me=`basename $0`
@@ -95,6 +95,8 @@ echo "$SUBSUBCAPASSWD" | openssl ca -batch \
     -md sha1 \
     -out "$D/crt.pem"
 
+echo "*** Creating certificate chain..."
+cat "$CADIR/crtchain.pem" "$D/crt.pem" > "$D/crtchain.pem"
 echo "*** Dumping $NAME certificate as text..."
 dumpcert "$D/crt.pem" > "$D/crt.txt"
 
