@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: mk_leaf_cert.sh,v 1.7 2009/12/03 23:51:29 jlh Exp $
+# $Id: mk_leaf_cert.sh,v 1.8 2009/12/04 08:24:51 jlh Exp $
 
 usage() {
 	local me=`basename $0`
@@ -99,7 +99,7 @@ openssl x509 -inform PEM -in "$D/crt.txtpem" > "$D/crt.pem"
 rm "$D/crt.txtpem"
 
 echo "*** Creating certificate chain..."
-cat "$CADIR/crtchain.pem" "$D/crt.pem" > "$D/crtchain.pem"
+cat "$D/crt.pem" "$CADIR/crtchain.pem" > "$D/crtchain.pem"
 echo "*** Dumping $NAME certificate as text..."
 dumpcert "$D/crt.pem" > "$D/crt.txt"
 
