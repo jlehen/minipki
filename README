@@ -1,5 +1,5 @@
-MiniPKI is a set of small shell scripts to tame OpenSSL and hide its
-niggling behaviour to create a state of the art certificate authority.
+MiniPKI is a set of small shell scripts to tame OpenSSL and hide its niggling
+behaviour in order to create a state of the art certificate authority.
 
 It imposes the following hierarchy:
 Root CA:    C=Country, O=Organisation
