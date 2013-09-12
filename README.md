@@ -44,51 +44,37 @@ The usage is modeled after the hierarchy.
 ### Example
 
 1. Create a root CA to rule 'em all, valid for 10 years
-
     `
     $ ./mk_root_CA.sh -f $((365*10)) FR MyDomain
     `
-
 2. Create certificates for your web servers
     + First the mandatory intermediate certificates (the "web" realm and the "server" category):
-
         `
         $ ./mk_subCA.sh $((365*10)) FR MyDomain Web
         $ ./mk_subsubCA.sh $((365*5)) FR MyDomain Web Server
         `
-
    + Then create your web server certificate:
-
         `
         ./mk_leaf_cert.sh $((365*2)) FR MyDomain Web Server Home home.mydomain.fr
         `
-
    + Need another one for your media player web server?
-
         `
         ./mk_leaf_cert.sh $((365*2)) FR MyDomain Web Server MediaPlayer media.mydomain.fr
         `
-
-
 3. Create certificates for your mail infrastructure
     + First the mandatory intermediate certificates (the "mail" realm and the "server" and "usermail" categories):
-
         `
         $ ./mk_subCA.sh $((365*10)) FR MyDomain Mail
         $ ./mk_subsubCA.sh $((365*5)) FR MyDomain Mail Server
         $ ./mk_subsubCA.sh $((365*5)) FR MyDomain Mail UserMail
         `
-
     + Then create certificates for your two MX:
-    
         `
         $ ./mk_leaf_cert.sh $((365*2)) FR Example Mail Server MX1 mx1.mydomain.fr
         $ ./mk_leaf_cert.sh $((365*2)) FR Example Mail Server MX2 mx2.mydomain.fr
         `
-
     + And now certificates for your users to sign/encrypt mails:
-    
         `
         ./mk_leaf_cert.sh $((365*2)) FR Example Mail UserMail jeremie jeremie@example.com
         ./mk_leaf_cert.sh $((365*2)) FR Example Mail UserMail jeremie jeremie@example.com
-
+        `
