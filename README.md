@@ -4,6 +4,7 @@ MiniPKI is a set of small shell scripts to tame OpenSSL and hide its niggling
 behaviour in order to create a state of the art certificate authority.
 
 For each certificate, you will get:
+
 * the private key
 
 * the certificate
@@ -14,24 +15,23 @@ For each certificate, you will get:
 
 MiniPKI imposes the following hierarchy:
 
-    * Root CA: `C=Country, O=Organisation`
+* Root CA: `C=Country, O=Organisation`
 
-    * Sub CA: `C=Country, O=Organisation, OU=Organization Unit`
+* Sub CA: `C=Country, O=Organisation, OU=Organization Unit`
 
-    * Sub-sub CA: `C=Country, O=Organisation, OU=Organization Unit, OU=Type`
+* Sub-sub CA: `C=Country, O=Organisation, OU=Organization Unit, OU=Type`
 
-        where Type is one of
-            * Server
-            * Client
-            * UserAuth
-            * UserMail
+    where Type is one of
+        * Server
+        * Client
+        * UserAuth
+        * UserMail
 
+* Leaf cert: `C=Country, O=Organisation, OU=Organization Unit, OU=Type, CN=Subject`
 
-    * Leaf cert: `C=Country, O=Organisation, OU=Organization Unit, OU=Type, CN=Subject`
-
-        For leaf certificates, an alternate subject is required as well (FQDN
-        for Server/Client certificates, mail address for user auth or user mail
-        certificates).
+    For leaf certificates, an alternate subject is required as well (FQDN
+    for Server/Client certificates, mail address for user auth or user mail
+    certificates).
 
 
 ### Usage
