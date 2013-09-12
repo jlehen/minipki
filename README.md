@@ -23,8 +23,11 @@ MiniPKI imposes the following hierarchy:
 
     where Type is one of
         * Server
+
         * Client
+
         * UserAuth
+
         * UserMail
 
 * Leaf cert: `C=Country, O=Organisation, OU=Organization Unit, OU=Type, CN=Subject`
