@@ -5,7 +5,9 @@ behaviour in order to create a state of the art certificate authority.
 
 For each certificate, you will get:
 * the private key
+
 * the certificate
+
 * the certificate chain up to the root CA
 
 ### Hierarchy
