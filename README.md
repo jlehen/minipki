@@ -4,9 +4,9 @@ MiniPKI is a set of small shell scripts to tame OpenSSL and hide its niggling
 behaviour in order to create a state of the art certificate authority.
 
 For each certificate, you will get:
-    * the private key
-    * the certificate
-    * the certificate chain up to the root CA
+* the private key
+* the certificate
+* the certificate chain up to the root CA
 
 ### Hierarchy
 
