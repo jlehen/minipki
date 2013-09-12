@@ -1,27 +1,93 @@
+### What is it?
+
 MiniPKI is a set of small shell scripts to tame OpenSSL and hide its niggling
 behaviour in order to create a state of the art certificate authority.
 
-It imposes the following hierarchy:
-Root CA:    C=Country, O=Organisation
-Sub CA:     C=Country, O=Organisation, OU=Organization Unit
-Sub-sub CA: C=Country, O=Organisation, OU=Organization Unit, OU=Type
-    where Type = <Server|Client|UserAuth|UserMail>
-Leaf cert:  C=Country, O=Organisation, OU=Organization Unit, OU=Type, CN=Subject
+For each certificate, you will get:
+* the private key
+* the certificate
+* the certificate chain up to the root CA
 
-For leaf certificates, an alternate subject is required as well (FQDN for
-Server/Client certificates, mail address for user auth or user mail
-certificates).
+### Hierarchy
+
+MiniPKI imposes the following hierarchy:
+
+* Root CA: `C=Country, O=Organisation`
+
+* Sub CA: `C=Country, O=Organisation, OU=Organization Unit`
+
+* Sub-sub CA: `C=Country, O=Organisation, OU=Organization Unit, OU=Type`
+
+    where Type is one of
+    * Server
+    * Client
+    * UserAuth
+    * UserMail
 
 
+* Leaf cert: `C=Country, O=Organisation, OU=Organization Unit, OU=Type, CN=Subject`
 
-Usage is simple, create the root certificate first, then the sub CA, then
-the sub-sub CA and finally leaf certificates.
+    For leaf certificates, an alternate subject is required as well (FQDN for
+    Server/Client certificates, mail address for user auth or user mail
+    certificates).
 
-Example:
-./mk_root_CA.sh -f $((365*10)) FR Example
-./mk_subCA.sh $((365*10)) FR Example Mail
-./mk_subsubCA.sh $((365*5)) FR Example Mail Server
-./mk_leaf_cert.sh $((365*2)) FR Example Mail Server MX1
-./mk_leaf_cert.sh $((365*2)) FR Example Mail Server MX2
-./mk_subsubCA.sh $((365*5)) FR Example Mail UserMail
-./mk_leaf_cert.sh $((365*2)) FR Example Mail UserMail jeremie jeremie@example.com
+
+### Usage
+The usage is modeled after the hierarchy.
+1. Create the root certificate (this will happen only once)
+2. Create the sub CA for the realm, such as "web", "mail", ... (once for each realm)
+3. Create the sub-sub CA for the type, such as "server", "client", ... (once for each type of certificate in a given realm)
+4. Create your leaf certificates.
+
+
+### Example
+
+1. Create a root CA to rule 'em all, valid for 10 years
+
+    ```
+    $ ./mk_root_CA.sh -f $((365*10)) FR MyDomain
+    ```
+
+2. Create certificates for your web servers
+    + First the mandatory intermediate certificates (the "web" realm and the "server" category):
+
+        ```
+        $ ./mk_subCA.sh $((365*10)) FR MyDomain Web
+        $ ./mk_subsubCA.sh $((365*5)) FR MyDomain Web Server
+        ```
+
+   + Then create your web server certificate:
+
+        ```
+        ./mk_leaf_cert.sh $((365*2)) FR MyDomain Web Server Home home.mydomain.fr
+        ```
+
+   + Need another one for your media player web server?
+
+        ```
+        ./mk_leaf_cert.sh $((365*2)) FR MyDomain Web Server MediaPlayer media.mydomain.fr
+        ```
+
+
+3. Create certificates for your mail infrastructure
+    + First the mandatory intermediate certificates (the "mail" realm and the "server" and "usermail" categories):
+
+        ```
+        $ ./mk_subCA.sh $((365*10)) FR MyDomain Mail
+        $ ./mk_subsubCA.sh $((365*5)) FR MyDomain Mail Server
+        $ ./mk_subsubCA.sh $((365*5)) FR MyDomain Mail UserMail
+        ```
+
+    + Then create certificates for your two MX:
+    
+        ```
+        $ ./mk_leaf_cert.sh $((365*2)) FR Example Mail Server MX1 mx1.mydomain.fr
+        $ ./mk_leaf_cert.sh $((365*2)) FR Example Mail Server MX2 mx2.mydomain.fr
+        ```
+
+    + And now certificates for your users to sign/encrypt mails:
+    
+        ```
+        ./mk_leaf_cert.sh $((365*2)) FR Example Mail UserMail jeremie jeremie@example.com
+        ./mk_leaf_cert.sh $((365*2)) FR Example Mail UserMail jeremie jeremie@example.com
+
