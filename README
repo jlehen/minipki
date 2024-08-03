@@ -57,7 +57,7 @@ Example
 
 1. Create a root CA to rule 'em all, valid for 10 years
 
-    $ ./mk_root_CA.sh -f $((365*10)) FR MyDomain
+    $ ./mk_rootCA.sh -f $((365*10)) FR MyDomain
 
 2. Create certificates for your web servers
     + First the mandatory intermediate certificates (the "web" realm and the
