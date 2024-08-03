@@ -88,7 +88,6 @@ echo "$ROOTCAPASSWD" | openssl ca -batch \
     -cert "$CADIR/crt.pem" \
     -config etc/ca.conf \
     -days $LIFESPAN \
-    -md sha1 \
     -out "$D/crt.txtpem"
 # We want only the PEM part.
 openssl x509 -inform PEM -in "$D/crt.txtpem" > "$D/crt.pem"
