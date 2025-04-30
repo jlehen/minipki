@@ -75,7 +75,7 @@ fi
 #
 # Let the show begin.
 . "$CADIR/config.sh"
-D=$(furtherdir "$CADIR" "OU=$TYPE")
+D=$(furtherdir "$CADIR" "T=$TYPE")
 mkCAhierarchy "$D"
 writeconf C O OU TYPE > "$D/config.sh"
 

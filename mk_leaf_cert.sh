@@ -36,7 +36,7 @@ case $# in
 	deepOrFlat "$1" || usage
 	shift
 	LIFESPAN="$1"
-	CADIR=$(builddir "C=$2" "O=$3" "OU=$4" "OU=$5")
+	CADIR=$(builddir "C=$2" "O=$3" "OU=$4" "T=$5")
 	shift 5
 	;;
 *)
