@@ -24,7 +24,7 @@ MiniPKI imposes the following hierarchy:
     C=Country, O=Organisation, OU=Organization Unit
 
 * Sub-sub CA:
-    C=Country, O=Organisation, OU=Organization Unit, OU=Type
+    C=Country, O=Organisation, OU=Organization Unit, T=Type
 
     where Type is one of
         * Server
@@ -33,7 +33,7 @@ MiniPKI imposes the following hierarchy:
         * UserMail
 
 * Leaf cert:
-    C=Country, O=Organisation, OU=Organization Unit, OU=Type, CN=Subject
+    C=Country, O=Organisation, OU=Organization Unit, T=Type, CN=Subject
 
     For leaf certificates, an alternate subject is required as well (FQDN
     for Server/Client certificates, mail address for user auth or user mail
